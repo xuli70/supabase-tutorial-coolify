@@ -36,7 +36,7 @@ SUPABASE_ANON_KEY=eyJ0eXAiOiJKV1DRTYHGTYQiLCJhbGc...(tu key completa aquí)
 
 ## 🧪 Verificar que funciona
 
-1. Accede a tu aplicación: https://tuto.axcsol.com
+1. Accede a tu aplicación: https://tuo.asiidooll.com
 2. Abre la consola del navegador (F12)
 3. Deberías ver:
    - ✅ "Configuración cargada: credenciales: ✅ Configuradas"
