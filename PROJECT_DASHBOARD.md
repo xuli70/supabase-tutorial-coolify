@@ -7,7 +7,7 @@
 │               APLICACIÓN TUTORIAL CRUD CON NIVELES DE ACCESO         │
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                      │
-│  🌐 URL: https://tuto.axcsol.com                                    │
+│  🌐 URL: https://tu-app.ejemplo.com                                 │
 │  📦 Repo: github.com/xuli70/supabase-tutorial-coolify              │
 │  🚀 Deploy: Coolify en VPS Hostinger                               │
 │  🗄️ Base de datos: Supabase (PostgreSQL)                           │
@@ -22,7 +22,7 @@
 - [x] VPS Hostinger configurado
 - [x] Coolify instalado y funcionando
 - [x] Supabase desplegado
-- [x] Dominio configurado (tuto.axcsol.com)
+- [x] Dominio configurado (tu-app.ejemplo.com)
 - [x] SSL/HTTPS activo
 
 ### 💻 Desarrollo
@@ -132,18 +132,18 @@ supabase-tutorial-coolify/
 ## 🎓 Conocimientos Adquiridos
 
 ```
-Nivel Básico ────────────────────────────> Nivel Avanzado
-│                                                       │
-├─ HTML/CSS/JS básico                                  │
-├─ Fetch API                                          │
-├─ Variables de entorno ─────────────────┐            │
-├─ Docker básico                         │            │
-├─ SQL básico                           ├─> TÚ ESTÁS AQUÍ
-├─ Row Level Security ──────────────────┘            │
-├─ Sistema de niveles de acceso ✨                   │
-├─ Autenticación (próximo paso)                      │
-├─ Realtime subscriptions                            │
-└─ Microservicios                                    │
+Nivel Básico ─────────────────────────────────────────────> Nivel Avanzado
+│                                                                        │
+├─ HTML/CSS/JS básico                                                   │
+├─ Fetch API                                                           │
+├─ Variables de entorno ──────────────────────┐                        │
+├─ Docker básico                              │                        │
+├─ SQL básico                                ├─> TÚ ESTÁS AQUÍ
+├─ Row Level Security ────────────────────────┘                        │
+├─ Sistema de niveles de acceso ✨                                    │
+├─ Autenticación (próximo paso)                                       │
+├─ Realtime subscriptions                                             │
+└─ Microservicios                                                     │
 ```
 
 ## 🚀 Próximos Pasos Sugeridos
@@ -174,7 +174,7 @@ Nivel Básico ──────────────────────
 ## 📞 Soporte y Recursos
 
 - **Repositorio**: [GitHub](https://github.com/xuli70/supabase-tutorial-coolify)
-- **App en vivo**: [tuto.axcsol.com](https://tuto.axcsol.com)
+- **App en vivo**: [tu-app.ejemplo.com](https://tu-app.ejemplo.com)
 - **Supabase Docs**: [supabase.com/docs](https://supabase.com/docs)
 - **Coolify Docs**: [coolify.io/docs](https://coolify.io/docs)
 
