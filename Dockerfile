@@ -6,7 +6,6 @@ COPY index.html /usr/share/nginx/html/
 COPY styles.css /usr/share/nginx/html/
 COPY config.js /usr/share/nginx/html/
 COPY app.js /usr/share/nginx/html/
-COPY README.md /usr/share/nginx/html/
 
 # Crear configuración personalizada de nginx para manejar el puerto dinámico
 RUN echo 'server { \
