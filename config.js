@@ -25,7 +25,13 @@ function getCurrentApiKey() {
         console.warn('No se ha seleccionado un nivel de acceso');
         return SUPABASE_CONFIG.keys.guest;
     }
-    return SUPABASE_CONFIG.keys[currentUserLevel] || SUPABASE_CONFIG.keys.guest;
+    
+    const key = SUPABASE_CONFIG.keys[currentUserLevel] || SUPABASE_CONFIG.keys.guest;
+    
+    // Debug: mostrar qué clave se está usando
+    console.log(`🔑 Usando clave para nivel ${currentUserLevel}:`, key.substring(0, 20) + '...');
+    
+    return key;
 }
 
 // Validar que las variables estén configuradas
@@ -45,12 +51,21 @@ function getApiUrl(endpoint = '') {
 // Headers comunes para todas las peticiones
 function getHeaders() {
     const apiKey = getCurrentApiKey();
-    return {
+    
+    // Debug: mostrar headers que se enviarán
+    const headers = {
         'apikey': apiKey,
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation' // Para que devuelva los datos después de crear/actualizar
     };
+    
+    console.log('📡 Headers enviados:', {
+        apikey: headers.apikey.substring(0, 20) + '...',
+        Authorization: 'Bearer ' + headers.apikey.substring(0, 20) + '...'
+    });
+    
+    return headers;
 }
 
 // Establecer nivel de usuario
@@ -59,6 +74,14 @@ function setUserLevel(level) {
         currentUserLevel = level;
         localStorage.setItem('userLevel', level);
         console.log(`✅ Nivel de acceso establecido: ${level}`);
+        
+        // Debug: mostrar qué clave se usará
+        console.log('🔍 Claves disponibles:', {
+            guest: SUPABASE_CONFIG.keys.guest?.substring(0, 20) + '...',
+            user: SUPABASE_CONFIG.keys.user?.substring(0, 20) + '...',
+            admin: SUPABASE_CONFIG.keys.admin?.substring(0, 20) + '...'
+        });
+        
         return true;
     }
     console.error('❌ Nivel de acceso inválido:', level);
@@ -88,6 +111,37 @@ function canPerformAction(action) {
     return userPermissions.includes(action);
 }
 
+// Función de debug para probar conexión
+async function testConnection() {
+    console.log('🧪 Probando conexión con Supabase...');
+    
+    try {
+        const response = await fetch(getApiUrl('?limit=1'), {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        
+        console.log('📊 Respuesta:', {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries())
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Conexión exitosa! Datos:', data);
+            return true;
+        } else {
+            const error = await response.text();
+            console.error('❌ Error en la conexión:', error);
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Error de red:', error);
+        return false;
+    }
+}
+
 // Log de configuración (sin mostrar las credenciales completas)
 console.log('🔧 Configuración cargada:', {
     url: SUPABASE_CONFIG.url,
@@ -101,3 +155,5 @@ window.setUserLevel = setUserLevel;
 window.getUserLevel = getUserLevel;
 window.clearUserLevel = clearUserLevel;
 window.canPerformAction = canPerformAction;
+window.getCurrentApiKey = getCurrentApiKey;
+window.testConnection = testConnection;
