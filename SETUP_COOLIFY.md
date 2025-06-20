@@ -19,8 +19,8 @@ Esta guía te explica cómo configurar las variables de entorno de forma segura 
 2. Agrega las siguientes variables:
 
 ```bash
-SUPABASE_URL=https://stik.axcsol.com
-SUPABASE_ANON_KEY=eyJ0eXAiOiJKV1QiLCJhbGc...(tu key completa aquí)
+SUPABASE_URL=https://stik.ascidool.com
+SUPABASE_ANON_KEY=eyJ0eXAiOiJKV1DRTYHGTYQiLCJhbGc...(tu key completa aquí)
 ```
 
 ### 3. Formato correcto
