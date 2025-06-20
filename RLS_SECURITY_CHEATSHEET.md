@@ -9,15 +9,15 @@ Guía completa para implementar seguridad a nivel de fila en tus tablas de Supab
 ### Sin RLS vs Con RLS
 ```
 SIN RLS:                          CON RLS:
-┌─────────────────┐              ┌─────────────────┐
+┌──────────────────┐              ┌──────────────────┐
 │ Tabla Completa  │              │ Tabla Completa  │
-│ ┌─────────────┐ │              │ ┌─────────────┐ │
+│ ┌──────────────┐ │              │ ┌──────────────┐ │
 │ │ Fila 1      │ │ ❌           │ │ Fila 1      │ │ ✅ (si cumple política)
-│ │ Fila 2      │ │ Todos        │ │ Fila 2      │ │ ❌ (no cumple)
-│ │ Fila 3      │ │ pueden       │ │ Fila 3      │ │ ✅ (si cumple)
-│ │ Fila 4      │ │ acceder      │ │ Fila 4      │ │ ❌ (no cumple)
-│ └─────────────┘ │              │ └─────────────┘ │
-└─────────────────┘              └─────────────────┘
+│ │ Fila 2      │ │ Todos       │ │ Fila 2      │ │ ❌ (no cumple)
+│ │ Fila 3      │ │ pueden      │ │ Fila 3      │ │ ✅ (si cumple)
+│ │ Fila 4      │ │ acceder     │ │ Fila 4      │ │ ❌ (no cumple)
+│ └──────────────┘ │              │ └──────────────┘ │
+└──────────────────┘              └──────────────────┘
 ```
 
 ## 🚨 Por qué es CRÍTICO activar RLS
@@ -204,9 +204,81 @@ RESET ROLE;
 **Causa**: No hay política que permita la operación
 **Solución**: Crear política apropiada o verificar condiciones
 
+### Error: "permission denied for schema public" (SERVICE_ROLE_KEY)
+**Causa**: El rol service_role no tiene permisos en el schema public
+**Solución 1**: Usar ANON_KEY en lugar de SERVICE_ROLE_KEY
+**Solución 2**: Otorgar permisos al rol:
+```sql
+-- Dar permisos al rol service_role
+GRANT USAGE ON SCHEMA public TO service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO service_role;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO service_role;
+```
+
 ### La app dejó de funcionar tras activar RLS
 **Causa**: No creaste políticas permisivas
 **Solución**: Agregar políticas básicas primero, luego restrictivas
+
+## 🔐 Problema con API Keys y Permisos de Schema
+
+### El problema que encontramos:
+Cuando intentas usar diferentes API keys (ANON_KEY vs SERVICE_ROLE_KEY) en Supabase, puedes encontrar el error:
+```
+{"code":"42501","details":null,"hint":null,"message":"permission denied for schema public"}
+```
+
+### ¿Por qué ocurre?
+1. **ANON_KEY**: Tiene permisos limitados pero acceso al schema public por defecto
+2. **SERVICE_ROLE_KEY**: Tiene permisos elevados pero puede no tener acceso al schema public en algunas configuraciones
+
+### Soluciones:
+
+#### Opción 1: Usar solo ANON_KEY (Recomendado para desarrollo)
+```javascript
+// En config.js
+keys: {
+    guest: window.ENV?.SUPABASE_ANON_KEY,
+    user: window.ENV?.SUPABASE_ANON_KEY,  // Misma key
+    admin: window.ENV?.SUPABASE_ANON_KEY  // Misma key
+}
+```
+
+#### Opción 2: Configurar permisos para service_role
+```sql
+-- En Supabase SQL Editor
+GRANT USAGE ON SCHEMA public TO service_role;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO service_role;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO service_role;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO service_role;
+
+-- Para futuras tablas
+ALTER DEFAULT PRIVILEGES IN SCHEMA public 
+GRANT ALL ON TABLES TO service_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public 
+GRANT ALL ON SEQUENCES TO service_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public 
+GRANT ALL ON FUNCTIONS TO service_role;
+```
+
+#### Opción 3: Crear roles personalizados
+```sql
+-- Crear rol personalizado
+CREATE ROLE app_user;
+CREATE ROLE app_admin;
+
+-- Asignar permisos
+GRANT USAGE ON SCHEMA public TO app_user, app_admin;
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO app_user;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO app_admin;
+```
+
+### Consideraciones de seguridad:
+- **NUNCA** expongas SERVICE_ROLE_KEY en el frontend en producción real
+- Para demos educativas, usar ANON_KEY para todos los niveles es aceptable
+- En producción, usa Supabase Auth + RLS, no diferentes API keys
 
 ## 🚀 Migración Segura a RLS
 
@@ -234,7 +306,7 @@ UPDATE tu_tabla SET user_id = 'default-uuid' WHERE user_id IS NULL;
 -- 4. Eliminar políticas permisivas
 ```
 
-## 🔐 Mejores Prácticas
+## 🔒 Mejores Prácticas
 
 1. **Siempre activa RLS** en tablas con datos sensibles
 2. **Empieza permisivo**, luego restringe gradualmente
@@ -243,8 +315,9 @@ UPDATE tu_tabla SET user_id = 'default-uuid' WHERE user_id IS NULL;
 5. **Monitorea logs** para detectar accesos denegados
 6. **Usa roles** para simplificar políticas complejas
 7. **Revisa periódicamente** las políticas activas
+8. **Ten cuidado con SERVICE_ROLE_KEY** - verifica permisos del schema
 
-## 📊 Plantilla de Políticas
+## 📚 Plantilla de Políticas
 
 ```sql
 -- ========== PLANTILLA RLS COMPLETA ==========
