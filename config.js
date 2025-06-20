@@ -9,10 +9,11 @@ const SUPABASE_CONFIG = {
     url: window.ENV?.SUPABASE_URL || 'https://tu-proyecto.supabase.co',
     
     // API Keys para diferentes niveles (configurar en Coolify)
+    // TEMPORAL: Usando ANON_KEY para todos los niveles debido a permisos del schema
     keys: {
         guest: window.ENV?.SUPABASE_ANON_KEY || 'configurar-anon-key',
-        user: window.ENV?.SUPABASE_USER_KEY || window.ENV?.SUPABASE_ANON_KEY || 'configurar-user-key',
-        admin: window.ENV?.SUPABASE_ADMIN_KEY || window.ENV?.SUPABASE_SERVICE_KEY || 'configurar-admin-key'
+        user: window.ENV?.SUPABASE_ANON_KEY || 'configurar-user-key',
+        admin: window.ENV?.SUPABASE_ANON_KEY || 'configurar-admin-key'
     },
     
     // Nombre de la tabla que creamos
@@ -147,7 +148,8 @@ console.log('🔧 Configuración cargada:', {
     url: SUPABASE_CONFIG.url,
     tabla: SUPABASE_CONFIG.tableName,
     nivelesDisponibles: Object.keys(SUPABASE_CONFIG.keys),
-    nivelActual: currentUserLevel || 'No seleccionado'
+    nivelActual: currentUserLevel || 'No seleccionado',
+    nota: 'TEMPORAL: Usando ANON_KEY para todos los niveles'
 });
 
 // Exportar funciones para uso global
