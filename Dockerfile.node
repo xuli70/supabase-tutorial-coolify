@@ -1,0 +1,13 @@
+# Dockerfile con Node.js para mayor compatibilidad con Coolify
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copiar todos los archivos
+COPY . .
+
+# Puerto configurable
+EXPOSE 3000
+
+# Iniciar el servidor
+CMD ["node", "server.js"]

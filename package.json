@@ -1,0 +1,11 @@
+{
+  "name": "supabase-tutorial-coolify",
+  "version": "1.0.0",
+  "description": "Tutorial simple para aprender a usar Supabase con Coolify",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "xuli70",
+  "license": "MIT"
+}
