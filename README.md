@@ -2,24 +2,35 @@
 
 Esta es una aplicación web simple que sirve como tutorial para aprender a interactuar con Supabase desplegado en un VPS con Coolify.
 
+## 🏆 Estado del Proyecto
+
+- ✅ Aplicación CRUD funcional
+- ✅ Desplegada en https://tuto.axcsol.com
+- ✅ Credenciales securizadas con variables de entorno
+- ✅ Scripts RLS preparados (pendiente de activar)
+- ✅ Documentación completa con chuletas
+
 ## 🎯 Objetivo
 
-Aprender las operaciones básicas CRUD (Create, Read, Update, Delete) con Supabase usando JavaScript vanilla.
+Aprender las operaciones básicas CRUD (Create, Read, Update, Delete) con Supabase usando JavaScript vanilla, con enfoque en seguridad y mejores prácticas.
 
 ## 🛠️ Tecnologías
 
 - **Frontend**: HTML, CSS, JavaScript vanilla (sin frameworks)
 - **Backend**: Supabase (PostgreSQL)
-- **Deployment**: Coolify
+- **Deployment**: Coolify con Docker
+- **Servidor Web**: Caddy
 - **Hosting**: VPS Hostinger
+- **Seguridad**: Variables de entorno + RLS
 
 ## 📋 Requisitos Previos
 
 1. Supabase instalado y funcionando en tu VPS
 2. La tabla `tutorial_tasks` creada en tu base de datos
-3. Acceso a las API keys de Supabase
+3. Acceso a las API keys de Supabase (configuradas en Coolify)
+4. Coolify configurado en tu VPS
 
-## 🚀 Instalación
+## 🚀 Instalación y Deploy
 
 ### 1. Clonar el repositorio
 
@@ -28,137 +39,155 @@ git clone https://github.com/xuli70/supabase-tutorial-coolify.git
 cd supabase-tutorial-coolify
 ```
 
-### 2. Configurar las credenciales
+### 2. Configurar en Coolify
 
-Las credenciales ya están configuradas en `config.js` con tus datos reales:
-- URL: `https://stik.axcsol.com`
-- API Key: Ya incluida
+1. **Crear nueva aplicación** en Coolify
+2. **Tipo**: Dockerfile
+3. **Puerto**: 8080
+4. **Variables de entorno** (IMPORTANTE):
+   ```
+   SUPABASE_URL=https://tu-proyecto.supabase.co
+   SUPABASE_ANON_KEY=tu-anon-key-aqui
+   ```
 
-### 3. Deploy con Coolify
+### 3. Deploy
 
-1. En tu panel de Coolify, crea una nueva aplicación
-2. Selecciona "Static Site" como tipo de aplicación
-3. Conecta este repositorio de GitHub
-4. Configura el build:
-   - Build Command: (dejar vacío, no necesita build)
-   - Publish Directory: `/` (raíz del proyecto)
-5. Deploy!
+Coolify hará el deploy automáticamente al conectar el repositorio.
+
+## 🔐 Seguridad Implementada
+
+### 1. Variables de Entorno
+- Las credenciales NO están en el código
+- Se inyectan en runtime desde Coolify
+- Ver: `SECURITY_ENV_VARS_CHEATSHEET.md`
+
+### 2. Row Level Security (RLS)
+- Scripts preparados en `/sql/`
+- Guía completa en `RLS_SECURITY_CHEATSHEET.md`
+- **Estado**: Listo para activar
+
+### Para activar RLS:
+```sql
+-- Ejecutar en Supabase SQL Editor
+-- Usar el archivo: sql/01_enable_rls_basic.sql
+```
 
 ## 📚 Estructura del Proyecto
 
 ```
-├── index.html      # Estructura HTML de la aplicación
-├── styles.css      # Estilos minimalistas
-├── config.js       # Configuración de Supabase
-├── app.js          # Lógica de la aplicación (CRUD)
-└── README.md       # Este archivo
+├── index.html          # Estructura HTML
+├── styles.css          # Estilos minimalistas
+├── config.js           # Configuración (usa variables de entorno)
+├── app.js              # Lógica CRUD
+├── entrypoint.sh       # Script para inyectar variables
+├── Dockerfile          # Configuración Docker para Coolify
+├── sql/                # Scripts SQL para RLS
+│   ├── 01_enable_rls_basic.sql
+│   ├── 02_rls_advanced_examples.sql
+│   └── 03_test_rls.sql
+└── Chuletas/           # Documentación de referencia
+    ├── DOCKERFILE_COOLIFY_CHEATSHEET.md
+    ├── SECURITY_ENV_VARS_CHEATSHEET.md
+    ├── SUPABASE_COOLIFY_VPS_CHEATSHEET.md
+    └── RLS_SECURITY_CHEATSHEET.md
 ```
 
 ## 🔧 Funcionalidades
 
 ### Operaciones CRUD
-
-1. **CREATE**: Crear nuevas tareas con título, descripción, estado y prioridad
-2. **READ**: Listar todas las tareas con filtros y ordenamiento
-3. **UPDATE**: Editar tareas existentes
-4. **DELETE**: Eliminar tareas
+- ✅ **CREATE**: Crear nuevas tareas
+- ✅ **READ**: Listar y filtrar tareas
+- ✅ **UPDATE**: Editar tareas existentes
+- ✅ **DELETE**: Eliminar tareas
 
 ### Características Extra
-
 - Filtrado por estado
-- Ordenamiento por fecha, prioridad o título
-- Mensajes de feedback para cada operación
-- Panel de debug para ver las respuestas de la API
+- Ordenamiento dinámico
+- Mensajes de feedback
+- Panel de debug
+- Verificación de conexión
 - Interfaz responsive
 
-## 🎓 Conceptos que Aprenderás
+## 📖 Chuletas de Referencia
+
+### 1. [DOCKERFILE_COOLIFY_CHEATSHEET.md](DOCKERFILE_COOLIFY_CHEATSHEET.md)
+- Cómo crear Dockerfiles para Coolify
+- Puerto 8080 y configuración de Caddy
+
+### 2. [SECURITY_ENV_VARS_CHEATSHEET.md](SECURITY_ENV_VARS_CHEATSHEET.md)
+- Protección de credenciales
+- Implementación de variables de entorno
+
+### 3. [SUPABASE_COOLIFY_VPS_CHEATSHEET.md](SUPABASE_COOLIFY_VPS_CHEATSHEET.md)
+- Guía completa de integración
+- Arquitectura y flujo de datos
+
+### 4. [RLS_SECURITY_CHEATSHEET.md](RLS_SECURITY_CHEATSHEET.md)
+- Row Level Security explicado
+- Implementación paso a paso
+
+## 🎓 Conceptos que Aprendes
 
 1. **Conexión con Supabase**
-   - Configurar headers con API key
-   - Construir URLs de endpoints
+   - Configuración segura con variables de entorno
+   - Headers y autenticación
+   - Construcción de endpoints
 
 2. **Operaciones HTTP**
-   - GET para leer datos
-   - POST para crear
-   - PATCH para actualizar
-   - DELETE para eliminar
+   - GET, POST, PATCH, DELETE
+   - Manejo de respuestas JSON
+   - Control de errores
 
-3. **Manejo de respuestas**
-   - Procesar JSON
-   - Manejar errores
-   - Mostrar feedback al usuario
+3. **Seguridad**
+   - Variables de entorno
+   - Row Level Security
+   - Mejores prácticas
 
-4. **Filtros y queries**
-   - Usar operadores de Supabase (eq, order)
-   - Construir queries dinámicas
-
-## 📝 Ejemplos de Código
-
-### Crear una tarea
-```javascript
-const response = await fetch(getApiUrl(), {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify({
-        title: 'Mi nueva tarea',
-        description: 'Descripción',
-        status: 'pendiente',
-        priority: 3
-    })
-});
-```
-
-### Leer tareas con filtros
-```javascript
-// Filtrar por estado y ordenar por prioridad
-const response = await fetch(getApiUrl('?status=eq.pendiente&order=priority.desc'), {
-    method: 'GET',
-    headers: getHeaders()
-});
-```
-
-## 🔐 Seguridad
-
-**IMPORTANTE**: Esta aplicación es solo para fines educativos. En producción:
-
-1. No expongas las API keys en el código del cliente
-2. Implementa Row Level Security (RLS) en Supabase
-3. Usa autenticación para proteger las operaciones
-4. Valida todos los inputs en el servidor
+4. **Deploy con Coolify**
+   - Dockerfile optimizado
+   - Configuración de puertos
+   - Variables de entorno
 
 ## 🐛 Solución de Problemas
 
-### Error de CORS
-Si encuentras errores de CORS, verifica que tu dominio esté configurado correctamente en Supabase.
+### Error 502 Bad Gateway
+- Verificar puerto 8080 en Dockerfile
+- Confirmar que Caddy está corriendo
 
-### Error 401 Unauthorized
-Verifica que la API key sea correcta y tenga los permisos necesarios.
+### Variables no configuradas
+- Revisar variables en Coolify
+- Hacer redeploy después de cambios
 
-### La tabla no existe
-Asegúrate de haber ejecutado el script SQL para crear la tabla `tutorial_tasks`.
-
-## 📞 Soporte
-
-Si tienes problemas o preguntas:
-1. Revisa el panel de debug en la aplicación
-2. Verifica los logs en Coolify
-3. Revisa la consola del navegador (F12)
+### RLS activado pero app no funciona
+- Verificar políticas en `/sql/`
+- Usar script básico primero
 
 ## 🚀 Próximos Pasos
 
-Una vez que domines este tutorial, puedes:
+1. **Activar RLS** ejecutando `sql/01_enable_rls_basic.sql`
+2. **Agregar autenticación** con Supabase Auth
+3. **Implementar RLS avanzado** (ver ejemplos en `/sql/`)
+4. **Agregar más funcionalidades**:
+   - Upload de archivos
+   - Realtime subscriptions
+   - Búsqueda avanzada
 
-1. Agregar autenticación de usuarios
-2. Implementar Row Level Security
-3. Crear relaciones entre tablas
-4. Usar Realtime subscriptions
-5. Agregar upload de archivos
+## 👥 Contribuciones
+
+Este es un proyecto educativo. Si encuentras mejoras o correcciones, ¡los PRs son bienvenidos!
 
 ## 📄 Licencia
 
-Este proyecto es de código abierto y está disponible para fines educativos.
+Proyecto de código abierto para fines educativos.
+
+## 🙏 Agradecimientos
+
+- Supabase por la plataforma
+- Coolify por simplificar el deployment
+- La comunidad por el feedback
 
 ---
 
-**Creado por**: xuli70  
-**Propósito**: Tutorial de aprendizaje Supabase + Coolify
+**Autor**: xuli70  
+**Propósito**: Tutorial educativo  
+**Stack**: Supabase + Coolify + VPS
