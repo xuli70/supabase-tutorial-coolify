@@ -15,6 +15,79 @@ const cancelBtn = document.getElementById('cancelBtn');
 const submitBtn = document.getElementById('submitBtn');
 const connectionStatus = document.getElementById('connectionStatus');
 
+// Elementos de nivel
+const levelSelector = document.getElementById('levelSelector');
+const mainApp = document.getElementById('mainApp');
+const currentLevelDiv = document.getElementById('currentLevel');
+const formSection = document.getElementById('formSection');
+const infoSection = document.getElementById('infoSection');
+const debugDetails = document.getElementById('debugDetails');
+
+// ========== FUNCIONES DE NIVEL ==========
+
+// Seleccionar nivel de acceso
+function selectLevel(level) {
+    if (!validateConfig()) {
+        mostrarMensaje('❌ Error: Variables de entorno no configuradas', 'error');
+        return;
+    }
+    
+    setUserLevel(level);
+    mostrarMensaje(`✅ Nivel ${level} seleccionado`, 'success');
+    
+    // Ocultar selector y mostrar app
+    levelSelector.style.display = 'none';
+    mainApp.style.display = 'block';
+    
+    // Actualizar UI según nivel
+    updateUIForLevel(level);
+    
+    // Cargar tareas
+    cargarTareas();
+}
+
+// Cambiar nivel
+function changeLevel() {
+    if (confirm('¿Deseas cambiar tu nivel de acceso? Esto recargará la aplicación.')) {
+        clearUserLevel();
+        location.reload();
+    }
+}
+
+// Actualizar UI según nivel
+function updateUIForLevel(level) {
+    // Mostrar nivel actual
+    const levelEmojis = {
+        guest: '👁️ Invitado',
+        user: '👤 Usuario',
+        admin: '👨‍💼 Administrador'
+    };
+    
+    currentLevelDiv.innerHTML = `Nivel actual: <strong>${levelEmojis[level]}</strong>`;
+    document.getElementById('levelInfo').textContent = levelEmojis[level];
+    
+    // Controlar visibilidad según nivel
+    switch(level) {
+        case 'guest':
+            // Invitado: solo lectura
+            formSection.style.display = 'none';
+            debugDetails.style.display = 'none';
+            break;
+            
+        case 'user':
+            // Usuario: puede crear y editar, no eliminar
+            formSection.style.display = 'block';
+            debugDetails.style.display = 'none';
+            break;
+            
+        case 'admin':
+            // Admin: acceso total
+            formSection.style.display = 'block';
+            debugDetails.style.display = 'block';
+            break;
+    }
+}
+
 // ========== FUNCIONES DE UTILIDAD ==========
 
 // Verificar estado de conexión
@@ -43,11 +116,15 @@ function mostrarMensaje(texto, tipo = 'info') {
 
 // Actualizar el panel de debug
 function actualizarDebug(operacion, datos) {
-    debugInfo.textContent = JSON.stringify({
-        operacion,
-        timestamp: new Date().toISOString(),
-        datos
-    }, null, 2);
+    // Solo admin puede ver debug
+    if (getUserLevel() === 'admin') {
+        debugInfo.textContent = JSON.stringify({
+            operacion,
+            timestamp: new Date().toISOString(),
+            nivel: getUserLevel(),
+            datos
+        }, null, 2);
+    }
 }
 
 // Formatear fecha
@@ -65,8 +142,8 @@ function formatearFecha(fecha) {
 
 // 1. CREATE - Crear nueva tarea
 async function crearTarea(datos) {
-    if (!verificarConexion()) {
-        mostrarMensaje('❌ Error: Credenciales no configuradas', 'error');
+    if (!canPerformAction('create')) {
+        mostrarMensaje('⚠️ No tienes permisos para crear tareas', 'warning');
         return;
     }
     
@@ -147,8 +224,8 @@ async function cargarTareas() {
 
 // 3. UPDATE - Actualizar tarea
 async function actualizarTarea(id, datos) {
-    if (!verificarConexion()) {
-        mostrarMensaje('❌ Error: Credenciales no configuradas', 'error');
+    if (!canPerformAction('update')) {
+        mostrarMensaje('⚠️ No tienes permisos para actualizar tareas', 'warning');
         return;
     }
     
@@ -179,8 +256,8 @@ async function actualizarTarea(id, datos) {
 
 // 4. DELETE - Eliminar tarea
 async function eliminarTarea(id) {
-    if (!verificarConexion()) {
-        mostrarMensaje('❌ Error: Credenciales no configuradas', 'error');
+    if (!canPerformAction('delete')) {
+        mostrarMensaje('⚠️ No tienes permisos para eliminar tareas', 'warning');
         return;
     }
     
@@ -218,6 +295,8 @@ function mostrarTareas() {
         return;
     }
     
+    const userLevel = getUserLevel();
+    
     tasksList.innerHTML = tareas.map(tarea => `
         <div class="task-item">
             <div class="task-header">
@@ -233,8 +312,14 @@ function mostrarTareas() {
             </div>
             
             <div class="task-actions">
-                <button class="edit-btn" onclick="editarTarea(${tarea.id})">✏️ Editar</button>
-                <button class="delete-btn" onclick="eliminarTarea(${tarea.id})">🗑️ Eliminar</button>
+                ${canPerformAction('update') ? 
+                    `<button class="edit-btn" onclick="editarTarea(${tarea.id})">✏️ Editar</button>` : 
+                    '<button class="edit-btn" disabled>✏️ Editar</button>'
+                }
+                ${canPerformAction('delete') ? 
+                    `<button class="delete-btn" onclick="eliminarTarea(${tarea.id})">🗑️ Eliminar</button>` : 
+                    '<button class="delete-btn" disabled>🗑️ Eliminar</button>'
+                }
             </div>
         </div>
     `).join('');
@@ -242,6 +327,11 @@ function mostrarTareas() {
 
 // Preparar formulario para editar
 function editarTarea(id) {
+    if (!canPerformAction('update')) {
+        mostrarMensaje('⚠️ No tienes permisos para editar tareas', 'warning');
+        return;
+    }
+    
     tareaEditando = tareas.find(t => t.id === id);
     
     if (tareaEditando) {
@@ -307,15 +397,30 @@ refreshBtn.addEventListener('click', cargarTareas);
 
 // Cargar tareas al iniciar
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificar conexión primero
-    if (verificarConexion()) {
-        mostrarMensaje('🚀 Conectando con Supabase...', 'info');
-        cargarTareas();
+    // Verificar conexión
+    verificarConexion();
+    
+    // Verificar si ya hay un nivel seleccionado
+    const savedLevel = getUserLevel();
+    if (savedLevel) {
+        // Ya tiene nivel, mostrar app directamente
+        levelSelector.style.display = 'none';
+        mainApp.style.display = 'block';
+        updateUIForLevel(savedLevel);
+        
+        if (verificarConexion()) {
+            mostrarMensaje(`🚀 Conectando como ${savedLevel}...`, 'info');
+            cargarTareas();
+        }
     } else {
-        mostrarMensaje('⚠️ Por favor configura las variables de entorno en Coolify', 'error');
+        // No hay nivel, mostrar selector
+        levelSelector.style.display = 'block';
+        mainApp.style.display = 'none';
     }
 });
 
 // Hacer funciones globales para los botones inline
 window.editarTarea = editarTarea;
 window.eliminarTarea = eliminarTarea;
+window.selectLevel = selectLevel;
+window.changeLevel = changeLevel;
