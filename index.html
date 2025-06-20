@@ -87,9 +87,8 @@
         <section class="info-section">
             <h2>ℹ️ Información de Conexión</h2>
             <div class="info-panel">
-                <p><strong>URL Base:</strong> <code>https://stik.axcsol.com</code></p>
+                <p><strong>Estado:</strong> <span id="connectionStatus">Verificando...</span></p>
                 <p><strong>Tabla:</strong> <code>tutorial_tasks</code></p>
-                <p><strong>Endpoint:</strong> <code>/rest/v1/tutorial_tasks</code></p>
                 <details>
                     <summary>Ver respuesta de la última operación</summary>
                     <pre id="debugInfo">No hay operaciones aún</pre>
@@ -99,6 +98,8 @@
     </div>
 
     <!-- Scripts -->
+    <!-- Cargar variables de entorno primero -->
+    <script src="env.js"></script>
     <script src="config.js"></script>
     <script src="app.js"></script>
 </body>
