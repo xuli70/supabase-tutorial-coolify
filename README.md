@@ -5,7 +5,7 @@ Esta es una aplicación web simple que sirve como tutorial para aprender a inter
 ## 🏆 Estado del Proyecto
 
 - ✅ Aplicación CRUD funcional
-- ✅ Desplegada en https://tuto.axcsol.com
+- ✅ Desplegada en https://tu-app.ejemplo.com
 - ✅ Credenciales securizadas con variables de entorno
 - ✅ Scripts RLS preparados (pendiente de activar)
 - ✅ Sistema de niveles de acceso implementado
