@@ -53,7 +53,7 @@ SUPABASE_ADMIN_KEY=eyJ0eXAi...       # Control total
 ```javascript
 // env.js (generado por entrypoint.sh)
 window.ENV = {
-    SUPABASE_URL: "https://stik.axcsol.com",
+    SUPABASE_URL: "https://stik.asciidool.com",
     SUPABASE_ANON_KEY: "eyJ0eXAi...",
     SUPABASE_USER_KEY: "eyJ0eXAi...",
     SUPABASE_ADMIN_KEY: "eyJ0eXAi..."
@@ -246,7 +246,7 @@ function mostrarTareas() {
 
 ```bash
 # Básicas (requeridas)
-SUPABASE_URL=https://stik.axcsol.com
+SUPABASE_URL=https://stik.asciidool.com
 SUPABASE_ANON_KEY=eyJ0eXAi...  # Del dashboard de Supabase
 
 # Opcionales para niveles adicionales
