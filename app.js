@@ -13,8 +13,20 @@ const sortBy = document.getElementById('sortBy');
 const refreshBtn = document.getElementById('refreshBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const submitBtn = document.getElementById('submitBtn');
+const connectionStatus = document.getElementById('connectionStatus');
 
 // ========== FUNCIONES DE UTILIDAD ==========
+
+// Verificar estado de conexión
+function verificarConexion() {
+    if (window.ENV?.SUPABASE_URL && window.ENV?.SUPABASE_ANON_KEY) {
+        connectionStatus.innerHTML = '<span style="color: #2ecc71;">✅ Conectado</span>';
+        return true;
+    } else {
+        connectionStatus.innerHTML = '<span style="color: #e74c3c;">❌ No configurado</span>';
+        return false;
+    }
+}
 
 // Mostrar mensajes al usuario
 function mostrarMensaje(texto, tipo = 'info') {
@@ -53,6 +65,11 @@ function formatearFecha(fecha) {
 
 // 1. CREATE - Crear nueva tarea
 async function crearTarea(datos) {
+    if (!verificarConexion()) {
+        mostrarMensaje('❌ Error: Credenciales no configuradas', 'error');
+        return;
+    }
+    
     try {
         mostrarMensaje('Creando tarea...', 'info');
         
@@ -80,6 +97,12 @@ async function crearTarea(datos) {
 
 // 2. READ - Cargar todas las tareas
 async function cargarTareas() {
+    if (!verificarConexion()) {
+        tasksList.innerHTML = '<p style="text-align: center; color: #e74c3c;">⚠️ Credenciales no configuradas. Ver panel de información.</p>';
+        loading.style.display = 'none';
+        return;
+    }
+    
     try {
         loading.style.display = 'block';
         tasksList.style.display = 'none';
@@ -124,6 +147,11 @@ async function cargarTareas() {
 
 // 3. UPDATE - Actualizar tarea
 async function actualizarTarea(id, datos) {
+    if (!verificarConexion()) {
+        mostrarMensaje('❌ Error: Credenciales no configuradas', 'error');
+        return;
+    }
+    
     try {
         mostrarMensaje('Actualizando tarea...', 'info');
         
@@ -151,6 +179,11 @@ async function actualizarTarea(id, datos) {
 
 // 4. DELETE - Eliminar tarea
 async function eliminarTarea(id) {
+    if (!verificarConexion()) {
+        mostrarMensaje('❌ Error: Credenciales no configuradas', 'error');
+        return;
+    }
+    
     if (!confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
         return;
     }
@@ -274,8 +307,13 @@ refreshBtn.addEventListener('click', cargarTareas);
 
 // Cargar tareas al iniciar
 document.addEventListener('DOMContentLoaded', () => {
-    mostrarMensaje('🚀 Conectando con Supabase...', 'info');
-    cargarTareas();
+    // Verificar conexión primero
+    if (verificarConexion()) {
+        mostrarMensaje('🚀 Conectando con Supabase...', 'info');
+        cargarTareas();
+    } else {
+        mostrarMensaje('⚠️ Por favor configura las variables de entorno en Coolify', 'error');
+    }
 });
 
 // Hacer funciones globales para los botones inline
