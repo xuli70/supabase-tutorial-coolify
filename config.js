@@ -1,17 +1,33 @@
 // Configuración de Supabase
-// IMPORTANTE: Estas son tus credenciales reales
-// En producción, deberías usar variables de entorno o un método más seguro
+// IMPORTANTE: Las credenciales se inyectan desde variables de entorno en Coolify
+// No hardcodees credenciales aquí
 
 const SUPABASE_CONFIG = {
     // URL base de tu instancia de Supabase
-    url: 'https://stik.axcsol.com',
+    url: window.ENV?.SUPABASE_URL || 'https://tu-proyecto.supabase.co',
     
-    // API Key anónima (pública) - Usar esta para operaciones del cliente
-    anonKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc1MDMyOTMwMCwiZXhwIjo0OTA2MDAyOTAwLCJyb2xlIjoiYW5vbiJ9.czcXOEzr5UKmrc9OzK-Qhg8cey2qnw1iyCGJDlMBzyw',
+    // API Key anónima (pública) - Se configura en Coolify
+    anonKey: window.ENV?.SUPABASE_ANON_KEY || 'tu-anon-key-aqui',
     
     // Nombre de la tabla que creamos
     tableName: 'tutorial_tasks'
 };
+
+// Validar que las variables estén configuradas
+if (!window.ENV?.SUPABASE_URL || !window.ENV?.SUPABASE_ANON_KEY) {
+    console.error('⚠️ Variables de entorno no configuradas. Por favor configura SUPABASE_URL y SUPABASE_ANON_KEY en Coolify.');
+    // Mostrar mensaje de error en la UI
+    document.addEventListener('DOMContentLoaded', () => {
+        const messageArea = document.getElementById('messageArea');
+        if (messageArea) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'message error';
+            errorDiv.innerHTML = '⚠️ Error de configuración: Las credenciales de Supabase no están configuradas.<br>Por favor, contacta al administrador.';
+            errorDiv.style.position = 'relative';
+            messageArea.appendChild(errorDiv);
+        }
+    });
+}
 
 // Función helper para construir la URL completa del endpoint
 function getApiUrl(endpoint = '') {
@@ -28,9 +44,9 @@ function getHeaders() {
     };
 }
 
-// Exportar para debugging
+// Log de configuración (sin mostrar las credenciales completas)
 console.log('🔧 Configuración cargada:', {
     url: SUPABASE_CONFIG.url,
     tabla: SUPABASE_CONFIG.tableName,
-    endpoint: getApiUrl()
+    credenciales: window.ENV?.SUPABASE_ANON_KEY ? '✅ Configuradas' : '❌ No configuradas'
 });
