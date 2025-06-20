@@ -1,0 +1,13 @@
+# Dockerfile alternativo - puerto 80 directo
+FROM nginx:alpine
+
+# Copiar archivos de la aplicación
+COPY index.html /usr/share/nginx/html/
+COPY styles.css /usr/share/nginx/html/
+COPY config.js /usr/share/nginx/html/
+COPY app.js /usr/share/nginx/html/
+
+# Nginx ya escucha en puerto 80 por defecto
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
