@@ -7,24 +7,31 @@ COPY styles.css /usr/share/nginx/html/
 COPY config.js /usr/share/nginx/html/
 COPY app.js /usr/share/nginx/html/
 
-# Crear configuración personalizada de nginx para manejar el puerto dinámico
-RUN echo 'server { \
-    listen 8080; \
-    listen [::]:8080; \
-    server_name localhost; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ { \
-        expires 1y; \
-        add_header Cache-Control "public, immutable"; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Script para configurar nginx con el puerto dinámico
+RUN echo '#!/bin/sh\n\
+PORT=${PORT:-80}\n\
+echo "server {\n\
+    listen $PORT;\n\
+    listen [::]:$PORT;\n\
+    server_name _;\n\
+    root /usr/share/nginx/html;\n\
+    index index.html;\n\
+    \n\
+    location / {\n\
+        try_files \$uri \$uri/ /index.html;\n\
+    }\n\
+    \n\
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {\n\
+        expires 1y;\n\
+        add_header Cache-Control \"public, immutable\";\n\
+    }\n\
+}" > /etc/nginx/conf.d/default.conf\n\
+\n\
+echo "Starting nginx on port $PORT"\n\
+nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
 
-# Exponer puerto 8080 (estándar para Coolify)
-EXPOSE 8080
+# Exponer puerto 80 por defecto (Coolify lo sobreescribirá)
+EXPOSE 80
 
-# Comando para iniciar nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Usar el script de inicio
+CMD ["/start.sh"]
