@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Supabase - CRUD Simple</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 Tutorial Supabase CRUD</h1>
+            <p>Aprende a interactuar con Supabase usando JavaScript</p>
+        </header>
+
+        <!-- Formulario para crear/editar tareas -->
+        <section class="form-section">
+            <h2>➕ Crear/Editar Tarea</h2>
+            <form id="taskForm">
+                <input type="hidden" id="taskId" value="">
+                
+                <div class="form-group">
+                    <label for="title">Título: *</label>
+                    <input type="text" id="title" required placeholder="Escribe el título de la tarea">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción:</label>
+                    <textarea id="description" rows="3" placeholder="Descripción opcional de la tarea"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Estado:</label>
+                        <select id="status">
+                            <option value="pendiente">Pendiente</option>
+                            <option value="en_progreso">En Progreso</option>
+                            <option value="completada">Completada</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priority">Prioridad (1-5):</label>
+                        <input type="number" id="priority" min="1" max="5" value="1">
+                    </div>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" id="submitBtn">Crear Tarea</button>
+                    <button type="button" id="cancelBtn" style="display:none;">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Filtros y búsqueda -->
+        <section class="filter-section">
+            <h2>🔍 Filtros</h2>
+            <div class="filters">
+                <select id="filterStatus">
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en_progreso">En Progreso</option>
+                    <option value="completada">Completada</option>
+                </select>
+                
+                <select id="sortBy">
+                    <option value="created_at">Fecha de creación</option>
+                    <option value="priority">Prioridad</option>
+                    <option value="title">Título</option>
+                </select>
+                
+                <button id="refreshBtn">🔄 Actualizar</button>
+            </div>
+        </section>
+
+        <!-- Lista de tareas -->
+        <section class="tasks-section">
+            <h2>📋 Lista de Tareas</h2>
+            <div id="loading" class="loading">Cargando tareas...</div>
+            <div id="tasksList" class="tasks-list"></div>
+        </section>
+
+        <!-- Área de mensajes -->
+        <div id="messageArea" class="message-area"></div>
+
+        <!-- Panel de información/debug -->
+        <section class="info-section">
+            <h2>ℹ️ Información de Conexión</h2>
+            <div class="info-panel">
+                <p><strong>URL Base:</strong> <code>https://stik.axcsol.com</code></p>
+                <p><strong>Tabla:</strong> <code>tutorial_tasks</code></p>
+                <p><strong>Endpoint:</strong> <code>/rest/v1/tutorial_tasks</code></p>
+                <details>
+                    <summary>Ver respuesta de la última operación</summary>
+                    <pre id="debugInfo">No hay operaciones aún</pre>
+                </details>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
