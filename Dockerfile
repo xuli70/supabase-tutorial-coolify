@@ -1,26 +1,29 @@
-# Dockerfile para Coolify con Caddy
+# Dockerfile para aplicación segura con variables de entorno
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Instalar caddy para servir archivos estáticos
+# Instalar caddy
 RUN apk add --no-cache caddy
 
-# Copiar todos los archivos de la aplicación
+# Copiar archivos estáticos
 COPY index.html ./
 COPY styles.css ./
 COPY config.js ./
 COPY app.js ./
+COPY entrypoint.sh ./
 
-# Crear Caddyfile para servir la aplicación
+# Hacer ejecutable el script
+RUN chmod +x /app/entrypoint.sh
+
+# Crear Caddyfile
 RUN echo -e ":${PORT:-8080} {\n\
     root * /app\n\
     file_server\n\
     try_files {path} /index.html\n\
 }" > /app/Caddyfile
 
-# Exponer el puerto 8080
 EXPOSE 8080
 
-# Comando para iniciar Caddy
-CMD ["caddy", "run", "--config", "/app/Caddyfile", "--adapter", "caddyfile"]
+# Usar el script de entrypoint que inyecta las variables
+CMD ["/app/entrypoint.sh"]
