@@ -8,6 +8,7 @@ Esta es una aplicación web simple que sirve como tutorial para aprender a inter
 - ✅ Desplegada en https://tuto.axcsol.com
 - ✅ Credenciales securizadas con variables de entorno
 - ✅ Scripts RLS preparados (pendiente de activar)
+- ✅ Sistema de niveles de acceso implementado
 - ✅ Documentación completa con chuletas
 
 ## 🎯 Objetivo
@@ -48,13 +49,40 @@ cd supabase-tutorial-coolify
    ```
    SUPABASE_URL=https://tu-proyecto.supabase.co
    SUPABASE_ANON_KEY=tu-anon-key-aqui
+   SUPABASE_USER_KEY=tu-user-key-aqui (opcional)
+   SUPABASE_ADMIN_KEY=tu-service-role-key-aqui (opcional)
    ```
 
 ### 3. Deploy
 
 Coolify hará el deploy automáticamente al conectar el repositorio.
 
-## 🔐 Seguridad Implementada
+## 🔐 Sistema de Niveles de Acceso
+
+La aplicación incluye un sistema educativo de niveles que simula diferentes permisos:
+
+### Niveles disponibles:
+
+1. **👁️ Invitado** - Solo lectura
+   - Ver tareas
+   - Filtrar y ordenar
+   - Sin permisos de escritura
+
+2. **👤 Usuario** - Lectura y escritura
+   - Ver tareas
+   - Crear tareas
+   - Editar tareas
+   - No puede eliminar
+
+3. **👨‍💼 Administrador** - Control total
+   - Todos los permisos anteriores
+   - Eliminar tareas
+   - Ver panel de debug
+
+### ⚠️ Nota importante:
+Este sistema de niveles es **educativo**. En producción real, NUNCA expongas diferentes API keys en el frontend. Usa autenticación real con Supabase Auth.
+
+## 🔒 Seguridad Implementada
 
 ### 1. Variables de Entorno
 - Las credenciales NO están en el código
@@ -75,21 +103,22 @@ Coolify hará el deploy automáticamente al conectar el repositorio.
 ## 📚 Estructura del Proyecto
 
 ```
-├── index.html          # Estructura HTML
-├── styles.css          # Estilos minimalistas
-├── config.js           # Configuración (usa variables de entorno)
-├── app.js              # Lógica CRUD
-├── entrypoint.sh       # Script para inyectar variables
-├── Dockerfile          # Configuración Docker para Coolify
-├── sql/                # Scripts SQL para RLS
+├── index.html            # Estructura HTML
+├── styles.css            # Estilos minimalistas
+├── config.js             # Configuración (usa variables de entorno)
+├── app.js                # Lógica CRUD
+├── entrypoint.sh         # Script para inyectar variables
+├── Dockerfile            # Configuración Docker para Coolify
+├── sql/                  # Scripts SQL para RLS
 │   ├── 01_enable_rls_basic.sql
 │   ├── 02_rls_advanced_examples.sql
 │   └── 03_test_rls.sql
-└── Chuletas/           # Documentación de referencia
+└── Chuletas/             # Documentación de referencia
     ├── DOCKERFILE_COOLIFY_CHEATSHEET.md
     ├── SECURITY_ENV_VARS_CHEATSHEET.md
     ├── SUPABASE_COOLIFY_VPS_CHEATSHEET.md
-    └── RLS_SECURITY_CHEATSHEET.md
+    ├── RLS_SECURITY_CHEATSHEET.md
+    └── ACCESS_LEVELS_CHEATSHEET.md
 ```
 
 ## 🔧 Funcionalidades
@@ -101,12 +130,13 @@ Coolify hará el deploy automáticamente al conectar el repositorio.
 - ✅ **DELETE**: Eliminar tareas
 
 ### Características Extra
+- Sistema de niveles de acceso
 - Filtrado por estado
 - Ordenamiento dinámico
 - Mensajes de feedback
-- Panel de debug
+- Panel de debug (solo admin)
 - Verificación de conexión
-- Interfaz responsive
+- Interfaz responsiva
 
 ## 📖 Chuletas de Referencia
 
@@ -125,6 +155,10 @@ Coolify hará el deploy automáticamente al conectar el repositorio.
 ### 4. [RLS_SECURITY_CHEATSHEET.md](RLS_SECURITY_CHEATSHEET.md)
 - Row Level Security explicado
 - Implementación paso a paso
+
+### 5. [ACCESS_LEVELS_CHEATSHEET.md](ACCESS_LEVELS_CHEATSHEET.md)
+- Sistema de niveles de acceso
+- Implementación educativa de permisos
 
 ## 🎓 Conceptos que Aprendes
 
